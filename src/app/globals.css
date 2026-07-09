@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f4ec;
+  --foreground: #211d13;
+
+  /* Farm Fleet design tokens (earthy/modern) */
+  --plane: #f7f4ec;
+  --surface: #fffdf8;
+  --surface-2: #f1ecdf;
+  --ink-primary: #211d13;
+  --ink-secondary: #5c5645;
+  --ink-muted: #948c74;
+  --border-hairline: rgba(33, 29, 19, 0.1);
+  --accent-green: #2f6b3c;
+  --accent-amber: #c98500;
+
+  /* Status palette -- fixed, never themed (dataviz skill) */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  /* Chart */
+  --chart-line: #2f6b3c;
+  --chart-grid: #e7e1d1;
+  --chart-tooltip-bg: #fffdf8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-plane: var(--plane);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink-primary: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-border-hairline: var(--border-hairline);
+  --color-accent-green: var(--accent-green);
+  --color-accent-amber: var(--accent-amber);
+  --color-status-good: var(--status-good);
+  --color-status-warning: var(--status-warning);
+  --color-status-serious: var(--status-serious);
+  --color-status-critical: var(--status-critical);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #141310;
+    --foreground: #f5f2e9;
+
+    --plane: #141310;
+    --surface: #1c1a15;
+    --surface-2: #24211a;
+    --ink-primary: #f5f2e9;
+    --ink-secondary: #c7c0ab;
+    --ink-muted: #948c74;
+    --border-hairline: rgba(245, 242, 233, 0.1);
+    --accent-green: #5ea86e;
+    --accent-amber: #eda100;
+
+    --chart-line: #5ea86e;
+    --chart-grid: #2c2a22;
+    --chart-tooltip-bg: #1c1a15;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--plane);
+  color: var(--ink-primary);
 }
