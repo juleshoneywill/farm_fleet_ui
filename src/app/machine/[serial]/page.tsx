@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft, MapPin, Plus } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -229,12 +229,21 @@ export default function MachineDetail({
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">
             Service history
           </h2>
-          <span className="text-sm text-ink-secondary">
-            Total to date:{" "}
-            <span className="text-base font-semibold text-ink-primary [font-variant-numeric:tabular-nums]">
-              {fmtMoney(history.costTotal)}
+          <div className="flex items-baseline gap-4">
+            <Link
+              href={`/add?type=service&machine=${encodeURIComponent(machine.serial)}`}
+              className="inline-flex items-center gap-1 text-sm font-medium text-accent-green hover:underline"
+            >
+              <Plus size={14} />
+              Log service
+            </Link>
+            <span className="text-sm text-ink-secondary">
+              Total to date:{" "}
+              <span className="text-base font-semibold text-ink-primary [font-variant-numeric:tabular-nums]">
+                {fmtMoney(history.costTotal)}
+              </span>
             </span>
-          </span>
+          </div>
         </div>
         <div className="overflow-hidden rounded-xl border border-border-hairline bg-surface">
           {history.service.length === 0 ? (

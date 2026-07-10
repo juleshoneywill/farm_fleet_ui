@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { CalendarDays, Plus, RotateCcw } from "lucide-react";
 import { getFleet, getFleetAsOf, type Machine } from "@/lib/api";
 import StatCard from "@/components/StatCard";
 import MachineCard from "@/components/MachineCard";
@@ -58,25 +59,34 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl border border-border-hairline bg-surface p-1.5">
-          <div className="flex items-center gap-2 pl-2 text-ink-muted">
-            <CalendarDays size={16} />
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-xl border border-border-hairline bg-surface p-1.5">
+            <div className="flex items-center gap-2 pl-2 text-ink-muted">
+              <CalendarDays size={16} />
+            </div>
+            <input
+              id="as-of"
+              type="date"
+              value={date}
+              onChange={(e) => changeDate(e.target.value)}
+              className="bg-transparent px-1 py-1 text-sm text-ink-primary outline-none"
+            />
+            <button
+              onClick={() => changeDate("")}
+              disabled={!date}
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-ink-secondary transition-colors hover:bg-surface-2 disabled:opacity-40"
+            >
+              <RotateCcw size={13} />
+              Today
+            </button>
           </div>
-          <input
-            id="as-of"
-            type="date"
-            value={date}
-            onChange={(e) => changeDate(e.target.value)}
-            className="bg-transparent px-1 py-1 text-sm text-ink-primary outline-none"
-          />
-          <button
-            onClick={() => changeDate("")}
-            disabled={!date}
-            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-ink-secondary transition-colors hover:bg-surface-2 disabled:opacity-40"
+          <Link
+            href="/add"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-accent-green px-3.5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
-            <RotateCcw size={13} />
-            Today
-          </button>
+            <Plus size={15} />
+            Add data
+          </Link>
         </div>
       </div>
 
