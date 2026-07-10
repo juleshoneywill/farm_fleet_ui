@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Farm Fleet UI (Next.js)
 
-## Getting Started
+The web frontend for the [temporal_DB_demo](../temporal_DB_demo) project — a
+Datomic-backed farm machinery database where history and time-travel are
+built into the database itself. This UI's job is to make that visible: the
+same fleet queries, re-run *as of any date you pick*.
 
-First, run the development server:
+Built with Next.js (App Router) + React 19, Tailwind CSS 4, Recharts for
+charts, and d3-force for the parts graph layout.
+
+## What's in it
+
+- **Fleet overview** (`/`) — every machine as a card, with stat tiles
+  (active / under repair / sold / total mileage). The date picker in the
+  header re-runs the same query against `GET /api/fleet/as-of?date=...`, so
+  you can watch machines appear, break down, and get sold as you scrub
+  through time.
+- **Machine detail** (`/machine/[serial]`) — mileage charted over time,
+  full status history, the chronological service log, and total service
+  cost, all from `GET /api/machine/:serial/history`.
+- **Parts graph** (`/machine/[serial]/parts-graph`) — a force-directed graph
+  of the machine's parts. Structural edges show physical assembly;
+  dependency edges are directed "if this breaks, also reorder that" links.
+  Selecting a part BFS-walks the dependency edges (`src/lib/cascade.ts`) and
+  highlights the full reorder cascade.
+- **Add data** (`/add`) — a form generated at runtime from
+  `GET /api/schema`, so each entity type (machine, service, ...) renders
+  whatever attributes it actually has; new backend attributes show up here
+  with no UI changes. Submits to `POST /api/entity/:ns` (machines upsert by
+  serial), including optional backdating via the `as-of` field.
+- **Parts store** (`/store`, `/store/[slug]`, `/store/cart`) — a small
+  static-data storefront with category filters and a client-side cart
+  (`src/lib/store-data.ts`, `src/lib/cart.tsx`). It does not talk to the
+  API.
+
+## Running it
+
+The UI is thin by design — almost everything comes from the Clojure API, so
+that has to be running first (from `../temporal_DB_demo`):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+clojure -M:serve     # Farm API on http://localhost:3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev          # UI on http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Or start both at once from the API project:
 
-## Learn More
+```bash
+../temporal_DB_demo/start.sh
+```
 
-To learn more about Next.js, take a look at the following resources:
+The API base URL comes from `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project layout
 
-## Deploy on Vercel
+```
+src/
+  app/
+    page.tsx                        fleet overview + as-of date picker
+    machine/[serial]/page.tsx       machine detail (charts, history, service log)
+    machine/[serial]/parts-graph/   force-directed parts graph
+    add/page.tsx                    schema-driven insert form
+    store/                          static parts store + cart
+  components/
+    parts-graph/                    graph view, node/edge layers, force layout hook
+    store/                          product card, cart controls
+    EntityForm.tsx                  renders a form from the live API schema
+  lib/
+    api.ts                          typed client for every Farm API endpoint
+    cascade.ts                      BFS over dependency edges (reorder cascade)
+    cart.tsx / store-data.ts        client-side store state + catalog
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- All pages are client components fetching with `cache: "no-store"` — the
+  point of the demo is live time-travel queries, not static rendering.
+- If a page shows "Failed to load", the API almost certainly isn't running;
+  see [temporal_DB_demo's README](../temporal_DB_demo/README.md) for its
+  one-time Datomic storage setup (`~/.datomic/local.edn`).

@@ -2,21 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Network, Wheat } from "lucide-react";
-
-// The parts graph is seeded for the demo tractor only, so the nav tab deep
-// links straight to it.
-const GRAPH_HREF = "/machine/JD-7230-0098/parts-graph";
+import { ShoppingCart, Wheat } from "lucide-react";
+import { useCart } from "@/lib/cart";
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const onGraph = pathname.endsWith("/parts-graph");
+  const { count, hydrated } = useCart();
+  const onCart = pathname === "/store/cart";
 
   return (
     // z-50 keeps the header above page-level overlays (e.g. the graph
     // legend) when content scrolls beneath it.
     <header className="sticky top-0 z-50 border-b border-border-hairline bg-plane/90 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center gap-2.5 px-6 py-4">
+      <div className="flex items-center gap-2.5 px-4 py-4">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-green/15 text-accent-green">
             <Wheat size={18} strokeWidth={2} />
@@ -28,42 +26,23 @@ export default function SiteHeader() {
         <span className="ml-1 hidden text-sm text-ink-muted lg:inline">
           a temporal database, browsed
         </span>
-        <nav className="ml-auto flex items-center gap-1">
-          <NavTab href="/" label="Fleet" icon={LayoutGrid} active={!onGraph} />
-          <NavTab
-            href={GRAPH_HREF}
-            label="Parts graph"
-            icon={Network}
-            active={onGraph}
-          />
-        </nav>
+        <Link
+          href="/store/cart"
+          title="Cart"
+          className={`relative ml-auto inline-flex items-center rounded-lg px-3 py-1.5 transition-colors ${
+            onCart
+              ? "bg-surface-2 text-ink-primary"
+              : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink-primary"
+          }`}
+        >
+          <ShoppingCart size={17} />
+          {hydrated && count > 0 && (
+            <span className="absolute -top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-green px-1 text-[10px] font-semibold text-white">
+              {count}
+            </span>
+          )}
+        </Link>
       </div>
     </header>
-  );
-}
-
-function NavTab({
-  href,
-  label,
-  icon: Icon,
-  active,
-}: {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ size?: number | string }>;
-  active: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-        active
-          ? "bg-surface-2 text-ink-primary"
-          : "text-ink-secondary hover:bg-surface-2/60 hover:text-ink-primary"
-      }`}
-    >
-      <Icon size={15} />
-      {label}
-    </Link>
   );
 }
