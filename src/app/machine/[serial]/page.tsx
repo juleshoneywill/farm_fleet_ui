@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Plus } from "lucide-react";
+import { ArrowLeft, MapPin, Network, Plus } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -152,6 +152,13 @@ export default function MachineDetail({
             {machine.owner}
           </div>
         </div>
+        <Link
+          href={`/machine/${encodeURIComponent(machine.serial)}/parts-graph`}
+          className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border-hairline bg-surface px-3.5 py-2 text-sm font-medium text-ink-primary transition-colors hover:border-accent-green/60"
+        >
+          <Network size={15} className="text-accent-green" />
+          Parts graph
+        </Link>
       </div>
 
       <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3">

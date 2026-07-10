@@ -26,6 +26,18 @@ export type MachineHistory = {
   costTotal: number;
 };
 
+// Parts-relationship graph for one machine. Two edge kinds: "structural"
+// (physical assembly, tree-shaped) and "dependency" (directed "if this
+// breaks, also reorder that", with a human-readable reason).
+export type PartNode = { id: string; name: string; system: string };
+export type PartEdge = {
+  from: string;
+  to: string;
+  type: "structural" | "dependency";
+  reason?: string | null;
+};
+export type PartsGraph = { nodes: PartNode[]; edges: PartEdge[] };
+
 // One attribute as described by GET /api/schema -- the live Datomic schema,
 // so the UI can render insert forms for whatever shape each entity type has.
 export type SchemaAttr = {
@@ -64,6 +76,10 @@ export function getMachine(serial: string): Promise<Machine> {
 
 export function getMachineHistory(serial: string): Promise<MachineHistory> {
   return getJSON(`/api/machine/${encodeURIComponent(serial)}/history`);
+}
+
+export function getPartsGraph(serial: string): Promise<PartsGraph> {
+  return getJSON(`/api/machine/${encodeURIComponent(serial)}/parts-graph`);
 }
 
 export function getSchema(): Promise<Schema> {
